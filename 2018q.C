@@ -78,15 +78,47 @@ void read_input_file(istream& in)
 		in >> r;
 }
 
+uint
+read_uint(string& s, int ln)
+{
+	int v;
+	string::size_type sz;
+	if (s[0] == ' ') {
+		cerr << "Too many spaces in line " << ln << "\n";
+		exit(1);
+	}
+	try {
+		v = stoi(s, &sz);
+		if (s.length() == sz) {
+			s.erase();
+		} else {
+			if (s[sz] != ' ') {
+				cerr << "Incorrect input line#" << ln << " " 
+				    << s << "\n";
+				exit(1);
+			}
+			s.erase(0, sz+1);
+		} 
+    	} catch(...) {
+		cerr << "Bad integer value at line#" << ln << " " << s << "\n";
+		exit(1);
+	}
+	return v;
+}
+
 void read_output_file(istream& out)
 {
 	vehicles.resize(F);
+	int ln = 0;
 	for (auto& v: vehicles) {
-		uint sz;
-		out >> sz;
+		string l;
+		if (!getline(out, l))
+			cerr << "Incomplete output file\n";
+		ln++;
+		uint sz = read_uint(l, ln);
 		v.idx.resize(sz);
 		for (auto& i: v.idx)
-			out >> i;
+			i = read_uint(l, ln);
 	}
 }
 
